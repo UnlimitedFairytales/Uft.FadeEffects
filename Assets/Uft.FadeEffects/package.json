@@ -8,5 +8,12 @@
     "name": "Unlimited Fairytales",
     "url": "https://unlimited-fairytales.com/"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "samples": [
+        {
+            "displayName": "Uft.FadeEffects fade effect sample",
+            "description": "Uft.FadeEffects fade effect sample",
+            "path": "Samples~/FadeEffectSample"
+        }
+    ]
 }
