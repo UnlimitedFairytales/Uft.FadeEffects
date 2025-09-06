@@ -7,6 +7,10 @@ namespace Uft.FadeEffects
 {
     public sealed class FadeEffect : MonoBehaviour
     {
+        // Static
+
+        public const int SORTING_ORDER_MAX = 32767;
+
         static void SetStretch(RectTransform rectTransform, float left, float top, float right, float bottom)
         {
             rectTransform.anchorMin = new Vector2(0, 0);
@@ -15,49 +19,72 @@ namespace Uft.FadeEffects
             rectTransform.offsetMax = new Vector2(right, top);
         }
 
-        // static / instance
+        // Instance
 
         [SerializeField] FadeConfig _defaultFadeConfig;
-        [SerializeField] int _canvasSortOrder = 32767;
+        [SerializeField] Canvas _canvas;
+        [SerializeField] Image _image;
 
-        Canvas _canvas;
-        RawImage _rawImage;
+        // Unity event functions & event handlers
+
+        void Reset()
+        {
+            this._canvas = this.GetComponentInChildren<Canvas>();
+            this._image = this.GetComponentInChildren<Image>();
+        }
 
         void Awake()
         {
-            var objCanvas = new GameObject("Canvas");
-            objCanvas.transform.SetParent(gameObject.transform, false);
-            _canvas = objCanvas.AddComponent<Canvas>();
-            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            _canvas.sortingOrder = _canvasSortOrder;
-            _canvas.vertexColorAlwaysGammaSpace = true;
+            var uiLayer = LayerMask.NameToLayer("UI");
+            GameObject objCanvas = this._canvas != null ? this._canvas.gameObject : null;
+            if (objCanvas == null)
+            {
+                objCanvas = new GameObject("Canvas");
+                if (0 <= uiLayer) objCanvas.layer = uiLayer;
+                objCanvas.transform.SetParent(this.gameObject.transform, false);
+                this._canvas = objCanvas.AddComponent<Canvas>();
+                this._canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                this._canvas.sortingOrder = SORTING_ORDER_MAX;
+                this._canvas.vertexColorAlwaysGammaSpace = true;
+            }
 
-            var objRawImage = new GameObject("RawImage");
-            var rectTransform = objRawImage.AddComponent<RectTransform>();
-            SetStretch(rectTransform, 0, 0, 0, 0);
-            objRawImage.transform.SetParent(objCanvas.transform, false);
-            _rawImage = objRawImage.AddComponent<RawImage>();
-            _rawImage.color = _defaultFadeConfig.color;
+            var objImage = this._image != null ? this._image.gameObject : null;
+            if (objImage == null)
+            {
+                objImage = new GameObject("Image");
+                if (0 <= uiLayer) objImage.layer = uiLayer;
+                var rectTransform = objImage.AddComponent<RectTransform>();
+                SetStretch(rectTransform, 0, 0, 0, 0);
+                objImage.transform.SetParent(objCanvas.transform, false);
+                this._image = objImage.AddComponent<Image>();
+                this._image.color = new Color(0, 0, 0);
+            }
         }
 
-        // Unity event functions & event handlers / pure code
+        // Pure code
 
-        public async UniTask StartFadeAsync(bool isFadeIn, float? fadeTime_sec = null, Color? color = null, Ease? ease = null)
+        public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite sprite = null, Ease? ease = null)
         {
-            if (!gameObject.activeSelf)
+            if (!this.gameObject.activeSelf)
             {
-                gameObject.SetActive(true);
+                this.gameObject.SetActive(true);
             }
-            var duration_sec = fadeTime_sec ?? (isFadeIn ? _defaultFadeConfig.inTime_sec : _defaultFadeConfig.outTime_sec);
-            var startColor = color ?? _defaultFadeConfig.color;
-            startColor.a = isFadeIn ? 1 : 0;
-            var endColor = startColor;
-            endColor.a = isFadeIn ? 0 : 1;
-            var easeValue = ease ?? _defaultFadeConfig.ease;
-
-            _rawImage.gameObject.SetActive(true);
-            _rawImage.color = startColor;
-            await _rawImage.DOColor(endColor, duration_sec).SetEase(easeValue);
+            fadeTime_sec ??= (isOn ? this._defaultFadeConfig.onTime_sec : this._defaultFadeConfig.offTime_sec);
+            onColor ??= this._defaultFadeConfig.color;
+            if (offColor == null)
+            {
+                var c = this._defaultFadeConfig.color;
+                c.a = 0;
+                offColor = c;
+            }
+            sprite ??= this._defaultFadeConfig.sprite;
+            ease ??= this._defaultFadeConfig.ease;
+            Color startColor = isOn ? offColor.Value : onColor.Value;
+            Color endColor = isOn ? onColor.Value : offColor.Value;
+            this._image.gameObject.SetActive(true);
+            this._image.color = startColor;
+            this._image.sprite = sprite;
+            await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value);
         }
     }
 }

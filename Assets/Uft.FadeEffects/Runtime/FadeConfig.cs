@@ -7,9 +7,10 @@ namespace Uft.FadeEffects
     [Serializable]
     public class FadeConfig
     {
-        public float inTime_sec = 1.0f;
-        public float outTime_sec = 1.0f;
+        public float onTime_sec = 1.0f;
+        public float offTime_sec = 1.0f;
         public Color color = Color.black;
+        public Sprite sprite = null;
         public Ease ease = Ease.OutQuad;
     }
 }

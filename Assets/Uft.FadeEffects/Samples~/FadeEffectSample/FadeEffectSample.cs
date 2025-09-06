@@ -6,8 +6,11 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
 {
     public class FadeEffectSample : MonoBehaviour
     {
+        [SerializeField] Sprite _sprite;
         FadeEffect _fadeEffect;
-        bool _isFadeIn = true;
+        FadeEffect _imgFadeEffect;
+        bool _isOnEffect;
+        bool _isOnimgFadeEffect;
 
         void Start()
         {
@@ -17,8 +20,13 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
             {
                 if (obj.name == "FadeEffect")
                 {
-                    _fadeEffect = obj.GetComponent<FadeEffect>();
-                    break;
+                    this._fadeEffect = obj.GetComponent<FadeEffect>();
+                    continue;
+                }
+                if (obj.name == "imgFadeEffect")
+                {
+                    this._imgFadeEffect = obj.GetComponent<FadeEffect>();
+                    continue;
                 }
             }
         }
@@ -29,9 +37,21 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
             {
                 UniTask.Action(async () =>
                 {
-                    _isFadeIn = !_isFadeIn;
-                    await _fadeEffect.StartFadeAsync(_isFadeIn);
-                    Debug.Log("StartFadeAsync complete");
+                    this._isOnEffect = !this._isOnEffect;
+                    var newValue = this._isOnEffect;
+                    await this._fadeEffect.StartFadeAsync(newValue);
+                    Debug.Log($"StartFadeAsync({newValue}) complete");
+                })();
+            }
+
+            if (Input.GetKeyUp(KeyCode.G))
+            {
+                UniTask.Action(async () =>
+                {
+                    this._isOnimgFadeEffect = !this._isOnimgFadeEffect;
+                    var newValue = this._isOnimgFadeEffect;
+                    await this._imgFadeEffect.StartFadeAsync(newValue, 4.0f, new Color(0.5f, 0, 0, 1), new Color(0, 1, 0, 0.5f), _sprite, DG.Tweening.Ease.OutBounce);
+                    Debug.Log($"StartFadeAsync({newValue}) complete");
                 })();
             }
         }
