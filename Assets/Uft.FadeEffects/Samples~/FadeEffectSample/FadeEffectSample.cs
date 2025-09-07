@@ -23,7 +23,7 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
                     this._fadeEffect = obj.GetComponent<FadeEffect>();
                     continue;
                 }
-                if (obj.name == "imgFadeEffect")
+                if (obj.name == "FadeEffect1280x720")
                 {
                     this._imgFadeEffect = obj.GetComponent<FadeEffect>();
                     continue;
