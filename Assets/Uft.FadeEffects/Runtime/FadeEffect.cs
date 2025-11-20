@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -73,7 +73,7 @@ namespace Uft.FadeEffects
             onColor ??= this._defaultFadeConfig.color;
             if (offColor == null)
             {
-                var c = this._defaultFadeConfig.color;
+                var c = onColor.Value;
                 c.a = 0;
                 offColor = c;
             }
