@@ -3,7 +3,7 @@
   "displayName": "Uft.FadeEffects",
   "version": "1.0.0",
   "unity": "6000.0",
-  "description": "This is some fade effect helpers.\n\n* Dependencies must be installed manually.\n\nDependencies\n\n- https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask\n- https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676",
+  "description": "This is some fade effect helpers.\n\n* Dependencies must be installed manually.\n\nDependencies\n\n- com.unity.ugui 2.0.0\n    - Import TMP Essentials\n- https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask\n- https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676\n    - Setup DOTween\n    - Create ASMDEF\n    - Project Settings > Scripting Define Symbols > UNITASK_DOTWEEN_SUPPORT",
   "author": {
     "name": "Unlimited Fairytales",
     "url": "https://unlimited-fairytales.com/"
@@ -12,7 +12,7 @@
   "samples": [
         {
             "displayName": "Uft.FadeEffects fade effect sample",
-            "description": "Uft.FadeEffects fade effect sample",
+            "description": "Uft.FadeEffects fade effect sample\n\n- Project Settings > Active Input Handling > Both",
             "path": "Samples~/FadeEffectSample"
         }
     ]
