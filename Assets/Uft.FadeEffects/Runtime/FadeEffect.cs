@@ -77,7 +77,7 @@ namespace Uft.FadeEffects
                 c.a = 0;
                 offColor = c;
             }
-            sprite ??= this._defaultFadeConfig.sprite;
+            sprite = sprite != null ? sprite : this._defaultFadeConfig.sprite;
             ease ??= this._defaultFadeConfig.ease;
             Color startColor = isOn ? offColor.Value : onColor.Value;
             Color endColor = isOn ? onColor.Value : offColor.Value;
