@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Uft.FadeEffects
 {
@@ -43,23 +44,25 @@ namespace Uft.FadeEffects
 
         void OnRenderImage(RenderTexture src, RenderTexture dst)
         {
+            this.RenderWithRenderTexture(src, dst);
+        }
+
+        public bool HasActiveEffects()
+        {
+            this.GetActiveEffectInfo(out int activeCount, out _);
+            return 0 < activeCount;
+        }
+
+        /// <summary>レガシーでも利用可能</summary>
+        public void RenderWithRenderTexture(RenderTexture src, RenderTexture dst)
+        {
             if (this._simplePostEffects == null || this._simplePostEffects.Length == 0)
             {
                 Graphics.Blit(src, dst);
                 return;
             }
 
-            // NOTE: Blitは重いため最適化のために把握
-            var activeCount = 0;
-            var lastIndex = 0;
-            for (int i = 0; i < this._simplePostEffects.Length; i++)
-            {
-                if (this._simplePostEffects[i] == null) continue;
-                if (this._simplePostEffects[i].Amount == 0) continue;
-                activeCount++;
-                lastIndex = i;
-            }
-
+            this.GetActiveEffectInfo(out int activeCount, out int lastIndex);
             if (activeCount == 0)
             {
                 Graphics.Blit(src, dst);
@@ -79,15 +82,16 @@ namespace Uft.FadeEffects
             bool useTemp1 = true;
             for (int i = 0; i < this._simplePostEffects.Length; i++)
             {
-                if (this._simplePostEffects[i] == null) continue;
-                if (this._simplePostEffects[i].Amount == 0) continue;
+                var effect = this._simplePostEffects[i];
+                if (effect == null) continue;
+                if (effect.Amount == 0f) continue;
 
                 currentDst =
                     i == lastIndex ? dst :
                     useTemp1 ? temp1 :
                     temp2;
 
-                this._simplePostEffects[i].Blit(currentSrc, currentDst);
+                effect.Blit(currentSrc, currentDst);
                 currentSrc = currentDst;
                 useTemp1 = !useTemp1;
             }
@@ -97,6 +101,82 @@ namespace Uft.FadeEffects
             }
             RenderTexture.ReleaseTemporary(temp1);
             RenderTexture.ReleaseTemporary(temp2);
+        }
+
+        /// <summary>URP用</summary>
+        public void RenderWithCommandBuffer(
+            CommandBuffer cmd,
+            RTHandle src,
+            RTHandle dst,
+            RTHandle temp1,
+            RTHandle temp2)
+        {
+            if (this._simplePostEffects == null || this._simplePostEffects.Length == 0)
+            {
+                Blitter.BlitCameraTexture(cmd, src, dst);
+                return;
+            }
+
+            this.GetActiveEffectInfo(out int activeCount, out int lastIndex);
+            if (activeCount == 0)
+            {
+                Blitter.BlitCameraTexture(cmd, src, dst);
+                return;
+            }
+            if (activeCount == 1)
+            {
+                var effect = this._simplePostEffects[lastIndex];
+                if (ReferenceEquals(src, dst))
+                {
+                    effect.BlitUrp(cmd, src, temp1);
+                    Blitter.BlitCameraTexture(cmd, temp1, dst);
+                }
+                else
+                {
+                    effect.BlitUrp(cmd, src, dst);
+                }
+                return;
+            }
+
+            var currentSrc = src;
+            RTHandle currentDst = default;
+            bool useTemp1 = true;
+            for (int i = 0; i < this._simplePostEffects.Length; i++)
+            {
+                var effect = this._simplePostEffects[i];
+                if (effect == null) continue;
+                if (effect.Amount == 0f) continue;
+
+                currentDst =
+                    i == lastIndex ? dst :
+                    useTemp1 ? temp1 :
+                    temp2;
+
+                effect.BlitUrp(cmd, currentSrc, currentDst);
+                currentSrc = currentDst;
+                useTemp1 = !useTemp1;
+            }
+            if (currentDst != dst)
+            {
+                Blitter.BlitCameraTexture(cmd, currentSrc, dst);
+            }
+        }
+
+        void GetActiveEffectInfo(out int activeCount, out int lastIndex)
+        {
+            activeCount = 0;
+            lastIndex = 0;
+
+            if (this._simplePostEffects == null) return;
+
+            for (int i = 0; i < this._simplePostEffects.Length; i++)
+            {
+                var effect = this._simplePostEffects[i];
+                if (effect == null) continue;
+                if (effect.Amount == 0f) continue;
+                activeCount++;
+                lastIndex = i;
+            }
         }
     }
 }
