@@ -2,6 +2,8 @@
     "name": "Uft.FadeEffects",
     "rootNamespace": "",
     "references": [
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime",
         "DOTween.Modules",
         "UniTask",
         "UniTask.DOTween"

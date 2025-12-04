@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Uft.FadeEffects
 {
@@ -56,6 +57,16 @@ namespace Uft.FadeEffects
                 return;
             }
             Graphics.Blit(src, dst, this._material);
+        }
+
+        public void BlitUrp(CommandBuffer cmd, RTHandle src, RTHandle dst)
+        {
+            if (this._material == null)
+            {
+                Blitter.BlitCameraTexture(cmd, src, dst);
+                return;
+            }
+            Blitter.BlitCameraTexture(cmd, src, dst, this._material, 0);
         }
 
         void SafeDestroy(UnityEngine.Object obj)
