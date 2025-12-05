@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -7,7 +8,7 @@ namespace Uft.FadeEffects
     public class SimplePostEffectCollection : MonoBehaviour
     {
 
-        [SerializeField] protected SimplePostEffectConfig[] _simplePostEffects;
+        [SerializeField] protected SimplePostEffectConfig[] _simplePostEffects; public IReadOnlyList<SimplePostEffectConfig> SimplePostEffects => this._simplePostEffects;
 
         void Awake()
         {
