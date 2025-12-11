@@ -228,12 +228,43 @@ MonoBehaviour:
   - _materialPrototype: {fileID: 2100000, guid: 930388ea8495b26478ab0ad18513d2e1, type: 2}
     _amount: 0.5
     _angle: 0
+    _softness: 0
+    _subTex: {fileID: 0}
+    _subTexColor: {r: 0, g: 0, b: 0, a: 0}
+    _ruleTex: {fileID: 0}
+    _invert: 0
   - _materialPrototype: {fileID: 2100000, guid: 9dac4446ecf6eb54f986a1f466ca08a4, type: 2}
     _amount: 0.5
     _angle: 0
+    _softness: 0
+    _subTex: {fileID: 0}
+    _subTexColor: {r: 0, g: 0, b: 0, a: 0}
+    _ruleTex: {fileID: 0}
+    _invert: 0
   - _materialPrototype: {fileID: 2100000, guid: 004ea20ca3466da45a058217c463c129, type: 2}
     _amount: 0.5
     _angle: 0
+    _softness: 0
+    _subTex: {fileID: 0}
+    _subTexColor: {r: 0, g: 0, b: 0, a: 0}
+    _ruleTex: {fileID: 0}
+    _invert: 0
+  - _materialPrototype: {fileID: 2100000, guid: 1c35629173a8fd047b0d88cdf0a545a8, type: 2}
+    _amount: 0.5
+    _angle: 0
+    _softness: 0.5
+    _subTex: {fileID: 2800000, guid: 37f32b150e9134e4f8a5136512a89586, type: 3}
+    _subTexColor: {r: 0, g: 0, b: 0, a: 0}
+    _ruleTex: {fileID: 2800000, guid: 6bc70aad78d738b45bc8bbbf78000838, type: 3}
+    _invert: 0
+  - _materialPrototype: {fileID: 2100000, guid: 1c35629173a8fd047b0d88cdf0a545a8, type: 2}
+    _amount: 0.5
+    _angle: 0
+    _softness: 0.5
+    _subTex: {fileID: 2800000, guid: 37f32b150e9134e4f8a5136512a89586, type: 3}
+    _subTexColor: {r: 1, g: 1, b: 1, a: 0}
+    _ruleTex: {fileID: 2800000, guid: 5b06f50a1f3919b438a081bb71d546b6, type: 3}
+    _invert: 0
 --- !u!1 &516663417
 GameObject:
   m_ObjectHideFlags: 0
