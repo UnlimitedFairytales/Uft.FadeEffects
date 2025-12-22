@@ -1,3 +1,5 @@
+#nullable enable
+
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -7,6 +9,8 @@ namespace Uft.FadeEffects
 {
     public sealed class FadeEffect : MonoBehaviour
     {
+        const string NAME = "[" + nameof(FadeEffect) + "]";
+
         // Static
 
         public const int SORTING_ORDER_MAX = 32767;
@@ -21,22 +25,23 @@ namespace Uft.FadeEffects
 
         // Instance
 
-        [SerializeField] FadeConfig _defaultFadeConfig;
-        [SerializeField] Canvas _canvas;
-        [SerializeField] Image _image;
+        [SerializeField] FadeConfig? _defaultFadeConfig;
+        [SerializeField] Canvas? _canvas;
+        [SerializeField] Image? _image;
 
         // Unity event functions & event handlers
 
         void Reset()
         {
-            this._canvas = this.GetComponentInChildren<Canvas>();
-            this._image = this.GetComponentInChildren<Image>();
+            this._defaultFadeConfig ??= new FadeConfig();
+            if (this._canvas == null) this._canvas = this.GetComponentInChildren<Canvas>();
+            if (this._image == null) this._image = this.GetComponentInChildren<Image>();
         }
 
         void Awake()
         {
             var uiLayer = LayerMask.NameToLayer("UI");
-            GameObject objCanvas = this._canvas != null ? this._canvas.gameObject : null;
+            var objCanvas = this._canvas != null ? this._canvas.gameObject : null;
             if (objCanvas == null)
             {
                 objCanvas = new GameObject("Canvas");
@@ -63,8 +68,16 @@ namespace Uft.FadeEffects
 
         // Pure code
 
-        public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite sprite = null, Ease? ease = null)
+        public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite? sprite = null, Ease? ease = null)
         {
+            if (this._defaultFadeConfig == null ||
+                this._canvas == null ||
+                this._image == null)
+            {
+                Debug.LogWarning($"{NAME} Before Awake(). {nameof(StartFadeAsync)} does not work.");
+                return;
+            }
+
             if (!this.gameObject.activeSelf)
             {
                 this.gameObject.SetActive(true);
@@ -84,6 +97,7 @@ namespace Uft.FadeEffects
             this._image.gameObject.SetActive(true);
             this._image.color = startColor;
             this._image.sprite = sprite;
+            this._image.DOKill();
             await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value);
         }
     }
