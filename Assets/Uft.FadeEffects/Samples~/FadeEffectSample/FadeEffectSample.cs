@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -50,7 +50,7 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
                 {
                     this._isOnimgFadeEffect = !this._isOnimgFadeEffect;
                     var newValue = this._isOnimgFadeEffect;
-                    await this._imgFadeEffect.StartFadeAsync(newValue, 4.0f, new Color(0.5f, 0, 0, 1), new Color(0, 1, 0, 0.5f), _sprite, DG.Tweening.Ease.OutBounce);
+                    await this._imgFadeEffect.StartFadeAsync(newValue, 4.0f, new Color(0.5f, 0, 0, 1), new Color(0, 1, 0, 0.5f), this._sprite, DG.Tweening.Ease.OutBounce);
                     Debug.Log($"StartFadeAsync({newValue}) complete");
                 })();
             }
