@@ -29,6 +29,8 @@ namespace Uft.FadeEffects
         [SerializeField] Canvas? _canvas;
         [SerializeField] Image? _image;
 
+        int _fadeVersion;
+
         // Unity event functions & event handlers
 
         void Reset()
@@ -51,6 +53,7 @@ namespace Uft.FadeEffects
                 this._canvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 this._canvas.sortingOrder = SORTING_ORDER_MAX;
                 this._canvas.vertexColorAlwaysGammaSpace = true;
+                objCanvas.AddComponent<GraphicRaycaster>();
             }
 
             var objImage = this._image != null ? this._image.gameObject : null;
@@ -70,6 +73,11 @@ namespace Uft.FadeEffects
 
         public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite? sprite = null, Ease? ease = null, bool? raycastTarget = null)
         {
+            if (!this.gameObject.activeSelf)
+            {
+                this.gameObject.SetActive(true);
+            }
+
             if (this._defaultFadeConfig == null ||
                 this._canvas == null ||
                 this._image == null)
@@ -78,10 +86,6 @@ namespace Uft.FadeEffects
                 return;
             }
 
-            if (!this.gameObject.activeSelf)
-            {
-                this.gameObject.SetActive(true);
-            }
             fadeTime_sec ??= (isOn ? this._defaultFadeConfig.onTime_sec : this._defaultFadeConfig.offTime_sec);
             onColor ??= this._defaultFadeConfig.color;
             if (offColor == null)
@@ -97,12 +101,21 @@ namespace Uft.FadeEffects
             Color startColor = isOn ? offColor.Value : onColor.Value;
             Color endColor = isOn ? onColor.Value : offColor.Value;
 
+            var version = ++this._fadeVersion;
             this._image.DOKill();
             this._image.gameObject.SetActive(true);
             this._image.color = startColor;
             this._image.sprite = sprite;
             this._image.raycastTarget = raycastTarget.Value;
             await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value);
+            if (version != this._fadeVersion) return;
+
+            // NOTE: 1/256未満なら実質透明
+            if (this._image.color.a <= (1f / 256f))
+            {
+                this._image.raycastTarget = false;
+                this.gameObject.SetActive(false);
+            }
         }
     }
 }
