@@ -68,7 +68,7 @@ namespace Uft.FadeEffects
 
         // Pure code
 
-        public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite? sprite = null, Ease? ease = null)
+        public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite? sprite = null, Ease? ease = null, bool? raycastTarget = null)
         {
             if (this._defaultFadeConfig == null ||
                 this._canvas == null ||
@@ -92,12 +92,16 @@ namespace Uft.FadeEffects
             }
             sprite = sprite != null ? sprite : this._defaultFadeConfig.sprite;
             ease ??= this._defaultFadeConfig.ease;
+            raycastTarget ??= this._defaultFadeConfig.raycastTarget;
+
             Color startColor = isOn ? offColor.Value : onColor.Value;
             Color endColor = isOn ? onColor.Value : offColor.Value;
+
+            this._image.DOKill();
             this._image.gameObject.SetActive(true);
             this._image.color = startColor;
             this._image.sprite = sprite;
-            this._image.DOKill();
+            this._image.raycastTarget = raycastTarget.Value;
             await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value);
         }
     }

@@ -14,5 +14,6 @@ namespace Uft.FadeEffects
         public Color color = Color.black;
         public Sprite? sprite = null;
         public Ease ease = Ease.OutQuad;
+        public bool raycastTarget = true;
     }
 }
