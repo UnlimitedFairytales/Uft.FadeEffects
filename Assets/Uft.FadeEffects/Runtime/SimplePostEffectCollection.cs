@@ -1,3 +1,6 @@
+#nullable enable
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -8,7 +11,12 @@ namespace Uft.FadeEffects
     public class SimplePostEffectCollection : MonoBehaviour
     {
 
-        [SerializeField] protected SimplePostEffectConfig[] _simplePostEffects; public IReadOnlyList<SimplePostEffectConfig> SimplePostEffects => this._simplePostEffects;
+        [SerializeField] protected SimplePostEffectConfig[]? _simplePostEffects; public IReadOnlyList<SimplePostEffectConfig> SimplePostEffects => this._simplePostEffects;
+
+        void Reset()
+        {
+            this._simplePostEffects ??= Array.Empty<SimplePostEffectConfig>();
+        }
 
         void Awake()
         {
@@ -75,33 +83,42 @@ namespace Uft.FadeEffects
                 return;
             }
 
-            var desc = src.descriptor;
-            var temp1 = RenderTexture.GetTemporary(desc);
-            var temp2 = RenderTexture.GetTemporary(desc);
-            RenderTexture currentSrc = src;
-            RenderTexture currentDst = null;
-            bool useTemp1 = true;
-            for (int i = 0; i < this._simplePostEffects.Length; i++)
+            RenderTexture? temp1 = null;
+            RenderTexture? temp2 = null;
+            try
             {
-                var effect = this._simplePostEffects[i];
-                if (effect == null) continue;
-                if (effect.Amount == 0f) continue;
+                var desc = src.descriptor;
+                temp1 = RenderTexture.GetTemporary(desc);
+                temp2 = RenderTexture.GetTemporary(desc);
+                RenderTexture currentSrc = src;
+                RenderTexture? currentDst = null;
+                bool useTemp1 = true;
 
-                currentDst =
-                    i == lastIndex ? dst :
-                    useTemp1 ? temp1 :
-                    temp2;
+                for (int i = 0; i < this._simplePostEffects.Length; i++)
+                {
+                    var effect = this._simplePostEffects[i];
+                    if (effect == null) continue;
+                    if (effect.Amount == 0f) continue;
 
-                effect.Blit(currentSrc, currentDst);
-                currentSrc = currentDst;
-                useTemp1 = !useTemp1;
+                    currentDst =
+                        i == lastIndex ? dst :
+                        useTemp1 ? temp1 :
+                        temp2;
+
+                    effect.Blit(currentSrc, currentDst);
+                    currentSrc = currentDst;
+                    useTemp1 = !useTemp1;
+                }
+                if (currentDst != dst)
+                {
+                    Graphics.Blit(currentSrc, dst);
+                }
             }
-            if (currentDst != dst)
+            finally
             {
-                Graphics.Blit(currentSrc, dst);
+                if (temp1 != null) RenderTexture.ReleaseTemporary(temp1);
+                if (temp2 != null) RenderTexture.ReleaseTemporary(temp2);
             }
-            RenderTexture.ReleaseTemporary(temp1);
-            RenderTexture.ReleaseTemporary(temp2);
         }
 
         /// <summary>URP用</summary>
@@ -140,7 +157,7 @@ namespace Uft.FadeEffects
             }
 
             var currentSrc = src;
-            RTHandle currentDst = default;
+            RTHandle? currentDst = null;
             bool useTemp1 = true;
             for (int i = 0; i < this._simplePostEffects.Length; i++)
             {
@@ -167,7 +184,6 @@ namespace Uft.FadeEffects
         {
             activeCount = 0;
             lastIndex = 0;
-
             if (this._simplePostEffects == null) return;
 
             for (int i = 0; i < this._simplePostEffects.Length; i++)

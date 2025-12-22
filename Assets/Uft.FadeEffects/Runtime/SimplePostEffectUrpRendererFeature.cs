@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -6,16 +8,25 @@ namespace Uft.FadeEffects
 {
     public class SimplePostEffectRendererFeature : ScriptableRendererFeature
     {
-        SimplePostEffectPass _pass;
+        SimplePostEffectPass? _pass;
         public override void Create() => this._pass = new SimplePostEffectPass();
-        public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData) => renderer.EnqueuePass(this._pass);
+        public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
+        {
+            if (this._pass == null) return;
+            renderer.EnqueuePass(this._pass);
+        }
 #pragma warning disable CS0618 // 型またはメンバーが旧型式です
-        public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData) => this._pass.SetTarget(renderer.cameraColorTargetHandle);
+        public override void SetupRenderPasses(ScriptableRenderer renderer, in RenderingData renderingData)
+        {
+            if (this._pass == null) return;
+            this._pass.SetTarget(renderer.cameraColorTargetHandle);
+        }
 #pragma warning restore CS0618 // 型またはメンバーが旧型式です
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             this._pass?.Dispose();
+            this._pass = null;
         }
 
         class SimplePostEffectPass : ScriptableRenderPass
@@ -23,10 +34,10 @@ namespace Uft.FadeEffects
             static readonly string profilerTag = nameof(SimplePostEffectPass);
 
             readonly ProfilingSampler _profilingSampler = new(profilerTag);
-            RTHandle _temp1;
-            RTHandle _temp2;
+            RTHandle? _temp1;
+            RTHandle? _temp2;
 
-            private RTHandle _cameraColorTarget;
+            RTHandle? _cameraColorTarget;
 
             public SimplePostEffectPass()
             {
@@ -41,11 +52,13 @@ namespace Uft.FadeEffects
 
             public void Dispose()
             {
-                // cameraColorTarget は renderer 管理なので Release しない
                 this._temp1?.Release();
                 this._temp1 = null;
                 this._temp2?.Release();
                 this._temp2 = null;
+
+                // cameraColorTarget は renderer 管理なので Release しない
+                this._cameraColorTarget = null;
             }
 
 #pragma warning disable CS0672 // メンバーは古い形式のメンバーをオーバーライドします
@@ -53,6 +66,8 @@ namespace Uft.FadeEffects
 #pragma warning restore CS0672 // メンバーは古い形式のメンバーをオーバーライドします
             {
 #pragma warning disable CS0618 // 型またはメンバーが旧型式です
+                if (this._cameraColorTarget == null) return;
+
                 this.ConfigureTarget(this._cameraColorTarget);
                 var desc = renderingData.cameraData.cameraTargetDescriptor;
                 desc.depthBufferBits = 0;
@@ -84,8 +99,11 @@ namespace Uft.FadeEffects
 
                 if (!camera.TryGetComponent<SimplePostEffectCollection>(out var collection)) return;
                 if (!collection.HasActiveEffects()) return;
-                var cmd = CommandBufferPool.Get(profilerTag);
+                if (this._cameraColorTarget == null ||
+                    this._temp1 == null ||
+                    this._temp2 == null) return;
 
+                var cmd = CommandBufferPool.Get(profilerTag);
                 using (new ProfilingScope(cmd, this._profilingSampler))
                 {
                     collection.RenderWithCommandBuffer(cmd, this._cameraColorTarget, this._cameraColorTarget, this._temp1, this._temp2);

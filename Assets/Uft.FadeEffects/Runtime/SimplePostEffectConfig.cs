@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -15,8 +17,8 @@ namespace Uft.FadeEffects
         static readonly int RULE_TEX_ID = Shader.PropertyToID("_RuleTex");
         static readonly int INVERT_ID = Shader.PropertyToID("_Invert");
 
-        [SerializeField] Material _materialPrototype;
-        Material _material; public Material Material => this._material;
+        [SerializeField] Material? _materialPrototype;
+        Material? _material; public Material? Material => this._material;
 
         [SerializeField, Range(0.0f, 1.0f)] float _amount;
         public float Amount
@@ -39,8 +41,8 @@ namespace Uft.FadeEffects
             set => this._softness = Mathf.Clamp(value, 0, 1.0f);
         }
 
-        [SerializeField] Texture _subTex;
-        public Texture SubTex
+        [SerializeField] Texture? _subTex;
+        public Texture? SubTex
         {
             get => this._subTex;
             set => this._subTex = value;
@@ -53,18 +55,19 @@ namespace Uft.FadeEffects
             set => this._subTexColor = value;
         }
 
-        [SerializeField] Texture _ruleTex;
-        public Texture RuleTex
+        [SerializeField] Texture? _ruleTex;
+        public Texture? RuleTex
         {
             get => this._ruleTex;
             set => this._ruleTex = value;
         }
 
+        // NOTE: Shaderに渡す前提のため、意味はboolだがint
         [SerializeField, Range(0, 1)] int _invert;
         public int Invert
         {
             get => this._invert;
-            set => this._invert = value;
+            set => this._invert = value == 0 ? 0 : 1;
         }
 
         public void Setup()
@@ -86,12 +89,12 @@ namespace Uft.FadeEffects
             if (this._material == null) return;
 
             this._material.SetFloat(AMOUNT_ID, this.Amount);
-            this._material.SetFloat(ANGLE_ID, this.Angle);
+            this._material.SetInt(ANGLE_ID, this.Angle);
             this._material.SetFloat(SOFTNESS_ID, this.Softness);
             this._material.SetTexture(SUB_TEX_ID, this.SubTex);
             this._material.SetColor(SUB_TEX_COLOR_ID, this.SubTexColor);
             this._material.SetTexture(RULE_TEX_ID, this.RuleTex);
-            this._material.SetFloat(INVERT_ID, this.Invert);
+            this._material.SetInt(INVERT_ID, this.Invert);
         }
 
         public void Blit(RenderTexture src, RenderTexture dst)
@@ -114,7 +117,7 @@ namespace Uft.FadeEffects
             Blitter.BlitCameraTexture(cmd, src, dst, this._material, 0);
         }
 
-        void SafeDestroy(UnityEngine.Object obj)
+        void SafeDestroy(UnityEngine.Object? obj)
         {
             if (obj == null) return;
 
