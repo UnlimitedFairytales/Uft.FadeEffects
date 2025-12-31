@@ -11,7 +11,7 @@ namespace Uft.FadeEffects
     public class SimplePostEffectCollection : MonoBehaviour
     {
 
-        [SerializeField] protected SimplePostEffectConfig[]? _simplePostEffects; public IReadOnlyList<SimplePostEffectConfig> SimplePostEffects => this._simplePostEffects;
+        [SerializeField] protected SimplePostEffectConfig[]? _simplePostEffects; public IReadOnlyList<SimplePostEffectConfig> SimplePostEffects => this._simplePostEffects ?? throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
         void Reset()
         {
@@ -20,7 +20,7 @@ namespace Uft.FadeEffects
 
         void Awake()
         {
-            if (this._simplePostEffects == null) return;
+            if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
             for (int i = 0; i < this._simplePostEffects.Length; i++)
             {
@@ -31,7 +31,7 @@ namespace Uft.FadeEffects
 
         void OnDestroy()
         {
-            if (this._simplePostEffects == null) return;
+            if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
             for (int i = 0; i < this._simplePostEffects.Length; i++)
             {
@@ -42,7 +42,7 @@ namespace Uft.FadeEffects
 
         void Update()
         {
-            if (this._simplePostEffects == null) return;
+            if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
             for (int i = 0; i < this._simplePostEffects.Length; i++)
             {
@@ -65,7 +65,9 @@ namespace Uft.FadeEffects
         /// <summary>レガシーでも利用可能</summary>
         public void RenderWithRenderTexture(RenderTexture src, RenderTexture dst)
         {
-            if (this._simplePostEffects == null || this._simplePostEffects.Length == 0)
+            if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
+
+            if (this._simplePostEffects.Length == 0)
             {
                 Graphics.Blit(src, dst);
                 return;
@@ -129,7 +131,9 @@ namespace Uft.FadeEffects
             RTHandle temp1,
             RTHandle temp2)
         {
-            if (this._simplePostEffects == null || this._simplePostEffects.Length == 0)
+            if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
+
+            if (this._simplePostEffects.Length == 0)
             {
                 Blitter.BlitCameraTexture(cmd, src, dst);
                 return;
@@ -182,10 +186,10 @@ namespace Uft.FadeEffects
 
         void GetActiveEffectInfo(out int activeCount, out int lastIndex)
         {
+            if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
+
             activeCount = 0;
             lastIndex = 0;
-            if (this._simplePostEffects == null) return;
-
             for (int i = 0; i < this._simplePostEffects.Length; i++)
             {
                 var effect = this._simplePostEffects[i];
