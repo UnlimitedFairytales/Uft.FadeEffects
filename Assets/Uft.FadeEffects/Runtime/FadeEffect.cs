@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Uft.FadeEffects
 {
-    public sealed class FadeEffect : MonoBehaviour
+    public class FadeEffect : MonoBehaviour
     {
         const string NAME = "[" + nameof(FadeEffect) + "]";
 
@@ -25,22 +25,22 @@ namespace Uft.FadeEffects
 
         // Instance
 
-        [SerializeField] FadeConfig? _defaultFadeConfig;
-        [SerializeField] Canvas? _canvas;
-        [SerializeField] Image? _image;
+        [SerializeField] protected FadeConfig? _defaultFadeConfig;
+        [SerializeField] protected Canvas? _canvas;
+        [SerializeField] protected Image? _image;
 
-        int _fadeVersion;
+        protected int _fadeVersion;
 
         // Unity event functions & event handlers
 
-        void Reset()
+        protected virtual void Reset()
         {
             this._defaultFadeConfig ??= new FadeConfig();
             if (this._canvas == null) this._canvas = this.GetComponentInChildren<Canvas>();
             if (this._image == null) this._image = this.GetComponentInChildren<Image>();
         }
 
-        void Awake()
+        protected virtual void Awake()
         {
             var uiLayer = LayerMask.NameToLayer("UI");
             var objCanvas = this._canvas != null ? this._canvas.gameObject : null;

@@ -13,12 +13,12 @@ namespace Uft.FadeEffects
 
         [SerializeField] protected SimplePostEffectConfig[]? _simplePostEffects; public IReadOnlyList<SimplePostEffectConfig> SimplePostEffects => this._simplePostEffects ?? throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
-        void Reset()
+        protected virtual void Reset()
         {
             this._simplePostEffects ??= Array.Empty<SimplePostEffectConfig>();
         }
 
-        void Awake()
+        protected virtual void Awake()
         {
             if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
@@ -29,7 +29,7 @@ namespace Uft.FadeEffects
             }
         }
 
-        void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
@@ -40,7 +40,7 @@ namespace Uft.FadeEffects
             }
         }
 
-        void Update()
+        protected virtual void Update()
         {
             if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
@@ -51,7 +51,7 @@ namespace Uft.FadeEffects
             }
         }
 
-        void OnRenderImage(RenderTexture src, RenderTexture dst)
+        protected virtual void OnRenderImage(RenderTexture src, RenderTexture dst)
         {
             this.RenderWithRenderTexture(src, dst);
         }
@@ -184,7 +184,7 @@ namespace Uft.FadeEffects
             }
         }
 
-        void GetActiveEffectInfo(out int activeCount, out int lastIndex)
+        protected virtual void GetActiveEffectInfo(out int activeCount, out int lastIndex)
         {
             if (this._simplePostEffects == null) throw new UnassignedReferenceException(nameof(this._simplePostEffects));
 
