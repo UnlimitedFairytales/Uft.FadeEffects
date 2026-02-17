@@ -42,14 +42,14 @@
                 // ルールをネガポジ反転するかどうかのオプション
                 rule = lerp(rule, 1.0 - rule, _Invert);
 
-                // ルールフェード計算 (Amountに応じてSoftnessの影響は三角形。0.5でそのまま。)
+                // ルールフェード計算
                 float t;
-                float s = _Softness * (1.0 - abs(2.0 * _Amount - 1.0));
-                if (s <= 0)
+                if (_Softness <= 0.001)
                     t = step(rule, _Amount);
                 else
                 {
-                    t = smoothstep(rule - s, rule + s, _Amount);
+                    float a = lerp(-_Softness, 1.0 + _Softness, _Amount);
+                    t = smoothstep(rule - _Softness, rule + _Softness, a);
                 }
                 return lerp(fromCol, toCol, t);
             }
