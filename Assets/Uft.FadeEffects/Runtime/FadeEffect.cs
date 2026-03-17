@@ -30,6 +30,7 @@ namespace Uft.FadeEffects
         [SerializeField] protected Image? _image;
 
         protected int _fadeVersion;
+        protected bool _isOn; public bool IsOn => this._isOn;
 
         // Unity event functions & event handlers
 
@@ -65,7 +66,7 @@ namespace Uft.FadeEffects
                 SetStretch(rectTransform, 0, 0, 0, 0);
                 objImage.transform.SetParent(objCanvas.transform, false);
                 this._image = objImage.AddComponent<Image>();
-                this._image.color = new Color(0, 0, 0);
+                this._image.color = new Color(0, 0, 0, 0);
             }
         }
 
@@ -100,6 +101,7 @@ namespace Uft.FadeEffects
 
             Color startColor = isOn ? offColor.Value : onColor.Value;
             Color endColor = isOn ? onColor.Value : offColor.Value;
+            this._isOn = isOn;
 
             var version = ++this._fadeVersion;
             this._image.DOKill();
