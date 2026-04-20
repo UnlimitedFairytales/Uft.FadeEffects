@@ -109,7 +109,8 @@ namespace Uft.FadeEffects
             this._image.color = startColor;
             this._image.sprite = sprite;
             this._image.raycastTarget = raycastTarget.Value;
-            await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value);
+            await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value)
+                .ToUniTask(cancellationToken: this.destroyCancellationToken);
             if (version != this._fadeVersion) return;
 
             // NOTE: 1/256未満なら実質透明
