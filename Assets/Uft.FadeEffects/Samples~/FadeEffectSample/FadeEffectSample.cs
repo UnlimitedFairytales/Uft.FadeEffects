@@ -41,13 +41,14 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
 
         void Update()
         {
+            var ct = this.destroyCancellationToken;
             if (Input.GetKeyUp(KeyCode.F))
             {
                 UniTask.Action(async () =>
                 {
                     this._isOnEffect = !this._isOnEffect;
                     var newValue = this._isOnEffect;
-                    await this._fadeEffect.StartFadeAsync(newValue);
+                    await this._fadeEffect.StartFadeAsync(ct, newValue);
                     Debug.Log($"StartFadeAsync({newValue}) complete");
                 })();
             }
@@ -58,7 +59,7 @@ namespace Uft.FadeEffects.Samples.FadeEffectSample
                 {
                     this._isOnimgFadeEffect = !this._isOnimgFadeEffect;
                     var newValue = this._isOnimgFadeEffect;
-                    await this._imgFadeEffect.StartFadeAsync(newValue, 4.0f, new Color(0.5f, 0, 0, 1), new Color(0, 1, 0, 0.5f), this._sprite, DG.Tweening.Ease.OutBounce);
+                    await this._imgFadeEffect.StartFadeAsync(ct, newValue, 4.0f, new Color(0.5f, 0, 0, 1), new Color(0, 1, 0, 0.5f), this._sprite, DG.Tweening.Ease.OutBounce);
                     Debug.Log($"StartFadeAsync({newValue}) complete");
                 })();
             }

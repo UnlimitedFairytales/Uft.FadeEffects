@@ -2,6 +2,7 @@
 
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -72,7 +73,7 @@ namespace Uft.FadeEffects
 
         // Pure code
 
-        public async UniTask StartFadeAsync(bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite? sprite = null, Ease? ease = null, bool? raycastTarget = null)
+        public async UniTask StartFadeAsync(CancellationToken cancellationToken, bool isOn, float? fadeTime_sec = null, Color? onColor = null, Color? offColor = null, Sprite? sprite = null, Ease? ease = null, bool? raycastTarget = null)
         {
             if (!this.gameObject.activeSelf)
             {
@@ -109,8 +110,10 @@ namespace Uft.FadeEffects
             this._image.color = startColor;
             this._image.sprite = sprite;
             this._image.raycastTarget = raycastTarget.Value;
-            await this._image.DOColor(endColor, fadeTime_sec.Value).SetEase(ease.Value)
-                .ToUniTask(cancellationToken: this.destroyCancellationToken);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, this.destroyCancellationToken);
+            await this._image.DOColor(endColor, fadeTime_sec.Value)
+                .SetEase(ease.Value)
+                .WithCancellation(cts.Token);
             if (version != this._fadeVersion) return;
 
             // NOTE: 1/256未満なら実質透明
