@@ -51,6 +51,7 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0, a: 1}
     sprite: {fileID: 0}
     ease: 6
+    raycastTarget: 1
   _canvas: {fileID: 499728435301878964}
   _image: {fileID: 4172073306856478725}
 --- !u!1 &3610931933941627509
@@ -188,7 +189,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 32767
+  m_SortingOrder: 32760
   m_TargetDisplay: 0
 --- !u!114 &5093814237552130915
 MonoBehaviour:
